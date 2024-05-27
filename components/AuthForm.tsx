@@ -25,6 +25,7 @@ import CustomInput from './CustomInput'
 import { authFormSchema } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { getLoggedInUser, signIn, signUp } from '@/lib/actions/user.actions'
+import PlaidLink from './PlaidLink'
 
   
 
@@ -52,10 +53,21 @@ const AuthForm = ({ type }:{ type:string }) => {
       // Sign up with Appwrite and create a plaid token
       // console.log(values)
       // setIsLoading(false)
-
+      const userData = {
+        firstName: data.firstName!,
+        lastName: data.lastName!,
+        address1: data.address1!,
+        city: data.city!,
+        state: data.state!,
+        postalCode: data.postalCode!,
+        dateOfBirth: data.dateOfBirth!,
+        ssn: data.ssn!,
+        email: data.email,
+        password: data.password
+      }
 
       if(type === 'sign-up'){
-        const newUser = await signUp(data);
+        const newUser = await signUp(userData);
           setUser(newUser)
       }
       if(type === 'sign-in'){
@@ -93,14 +105,14 @@ const AuthForm = ({ type }:{ type:string }) => {
           <h1 className='text-24 lg:text-36 font-semibold text-gray-900'>
             {user 
               ? 'Link Account'
-            : type === 'sign-in'
-            ? 'Sign In'
-            : 'Sign Up'}
+              : type === 'sign-in'
+              ? 'Sign In'
+              : 'Sign Up'}
 
             <p className='text-16 font-normal text-gray-600'>
               {user 
                 ? 'Link your account to get started'
-                : 'Please Link your details'
+                : 'Please enter your details'
                 }
             </p>
           </h1>
@@ -108,7 +120,7 @@ const AuthForm = ({ type }:{ type:string }) => {
       </header>
       {user ? (
         <div className="flex flex-col gap-4">
-          {/* <PlaidLink user={user} variant="primary" /> */}
+          <PlaidLink user={user} variant="primary" />
         </div>
       ):(
         <>
