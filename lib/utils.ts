@@ -2,6 +2,7 @@
 import { type ClassValue, clsx } from "clsx";
 import qs from "query-string";
 import { twMerge } from "tailwind-merge";
+import { z } from "zod";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -193,3 +194,19 @@ export const getTransactionStatus = (date: Date) => {
 
   return date > twoDaysAgo ? "Processing" : "Success";
 };
+
+
+export const authFormSchema = (type: string) => z.object({
+  // sign up
+  firstName: type === 'sign-in' ? z.string().optional() : z.string().min(3, 'First name must be at least 3 characters long'),
+  lastName: type === 'sign-in' ? z.string().optional() : z.string().min(3, 'Last name must be at least 3 characters long'),
+  address1: type === 'sign-in' ? z.string().optional() : z.string().max(50, 'Address cannot exceed 50 characters'),
+  city: type === 'sign-in' ? z.string().optional() : z.string().max(20, 'City cannot exceed 20 characters'),
+  state: type === 'sign-in' ? z.string().optional() : z.string().regex(/^[A-Za-z]{2}$/, 'State must consist of exactly 2 letters'),
+  postalCode: type === 'sign-in' ? z.string().optional() : z.string().regex(/^\d{3,6}$/, 'Postal code must be between 3 and 6 digits and contain only numbers'),
+  dateOfBirth: type === 'sign-in' ? z.string().optional() : z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date of Birth must be in the format YYYY-MM-DD'),
+  ssn: type === 'sign-in' ? z.string().optional() : z.string().regex(/^\d{3}-\d{2}-\d{4}$/, 'SSN must be in the format xxx-xx-xxxx'),
+  // both
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters long')
+});
